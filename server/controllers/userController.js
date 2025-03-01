@@ -10,21 +10,17 @@ const generateToken = require('../utils/generateToken')
 // @access  Public
 const signUp = asyncHandler(async (req, res) => {
 
-
     const { name, email, password } = req.body
-
     // validation 
     if (!name || !email || !password) {
         res.status(404);
         throw new Error('Please provide all the required fields');
     }
-
     const userExists = await User.findOne({ email })
     if (userExists) {
         res.status(400);
-        throw new Error(`User ${name} already exists`);
+        throw new Error(`${name} already exists`);
     }
-
     const user = await User.create({
         name,
         email,
@@ -52,18 +48,14 @@ const signUp = asyncHandler(async (req, res) => {
 
 // @desc    Login user and get token
 // @route POST /api/
-
 const authLoginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-
     // Validate email and password
     if (!email || !password) {
         res.status(400);
         throw new Error('Please provide an email and password');
     }
-
     const user = await User.findOne({ email });
-
     if (user && (await user.matchPassword(password))) {
         const token = generateToken(res, user._id)
         res.status(201).json({
